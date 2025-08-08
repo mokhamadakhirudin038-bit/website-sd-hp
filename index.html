@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="Website SD Negeri 2 Purbasari">
+<meta property="og:description" content="Silakan kunjungi Website SD Negeri 2 Purbasari.">
+<meta property="og:image" content="https://i.postimg.cc/pdhFTQvw/sehati.jpg">
+<meta property="og:url" content="https://web-sd-2.vercel.app">
+</head>
+
+
+    <title>WEBSITE SD 2 PURBASARI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, orderBy, query } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+    </script>
+    <style>
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+        .overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .post-card {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .media-preview {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans" style="background-image: url('https://i.imgur.com/ERcb64l.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
+    <!-- Mobile Menu Button -->
+    <button id="mobileMenuBtn" class="fixed top-4 left-4 z-50 md:hidden bg-blue-600 text-white p-3 rounded-lg shadow-lg">
+        <span id="menuIcon">☰</span>
+    </button>
+
+    <!-- Navigation Preferences Button -->
+    <button id="navPrefBtn" class="fixed top-4 right-4 z-50 bg-green-600 text-white p-3 rounded-lg shadow-lg">
+        <span>⚙️</span>
+    </button>
+
+    <!-- Navigation Preferences Panel -->
+    <div id="navPrefPanel" class="fixed top-16 right-4 z-50 bg-white rounded-lg shadow-xl border border-gray-200 p-4 w-64 hidden">
+        <h3 class="font-bold text-gray-800 mb-3">🎛️ Preferensi Navigasi</h3>
+        
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <label class="text-sm text-gray-700">Tampilkan Toolbar</label>
+                <input type="checkbox" id="showToolbar" class="toggle-checkbox" checked>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <label class="text-sm text-gray-700">Auto Next (5s)</label>
+                <input type="checkbox" id="autoNext" class="toggle-checkbox">
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <label class="text-sm text-gray-700">Smooth Scroll</label>
+                <input type="checkbox" id="smoothScroll" class="toggle-checkbox" checked>
+            </div>
+        </div>
+        
+        <div class="mt-4 pt-3 border-t border-gray-200">
+            <button id="resetPrefs" class="w-full bg-gray-500 text-white py-2 px-3 rounded text-sm hover:bg-gray-600">
+                🔄 Reset Default
+            </button>
+        </div>
+    </div>
+
+    <!-- Navigation Toolbar -->
+    <div id="navToolbar" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white rounded-full shadow-xl border border-gray-200 px-6 py-3 flex items-center space-x-4">
+        <button id="prevBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold text-sm">
+            Prev
+        </button>
+        
+        <div class="flex items-center space-x-2">
+            <span id="currentSection" class="text-sm font-bold text-blue-600">Profil Sekolah</span>
+            <span class="text-xs font-medium text-green-600">(<span id="sectionNumber" class="text-red-600">1</span>/6)</span>
+        </div>
+        
+        <button id="nextBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold text-sm">
+            Next
+        </button>
+        
+        <div class="w-px h-6 bg-gray-300"></div>
+        
+        <button id="homeBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm">
+            Menu
+        </button>
+    </div>
+
+    <!-- Sidebar - Mobile Responsive -->
+    <div id="sidebar" class="fixed left-0 top-0 h-full w-72 md:w-80 bg-blue-800 bg-opacity-30 text-white z-40 sidebar-transition backdrop-blur-sm transform -translate-x-full md:translate-x-0">
+        <div class="p-4 md:p-6">
+            <div class="mb-6 md:mb-8">
+                <h2 class="text-lg md:text-xl font-bold">SD NEGERI 2 PURBASARI</h2>
+            </div>
+            
+            <nav class="space-y-2 md:space-y-4">
+                <a href="#" onclick="showSection('profil-sekolah')" class="flex items-center py-2 md:py-3 px-3 md:px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    <span class="text-xl md:text-2xl mr-2 md:mr-3">🏫</span>
+                    <span class="text-black font-medium text-sm md:text-base">Profil Sekolah</span>
+                </a>
+                <a href="#" onclick="showSection('profil-kepala')" class="flex items-center py-2 md:py-3 px-3 md:px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    <span class="text-xl md:text-2xl mr-2 md:mr-3">👨‍💼</span>
+                    <span class="text-black font-medium text-sm md:text-base">Kepala Sekolah</span>
+                </a>
+                <a href="#" onclick="showSection('profil-guru')" class="flex items-center py-2 md:py-3 px-3 md:px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    <span class="text-xl md:text-2xl mr-2 md:mr-3">👩‍🏫</span>
+                    <span class="text-black font-medium text-sm md:text-base">Guru & Penjaga</span>
+                </a>
+                <a href="#" onclick="showSection('sarana-prasarana')" class="flex items-center py-2 md:py-3 px-3 md:px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    <span class="text-xl md:text-2xl mr-2 md:mr-3">🏢</span>
+                    <span class="text-black font-medium text-sm md:text-base">Sarana Prasarana</span>
+                </a>
+                <a href="#" onclick="showSection('kegiatan')" class="flex items-center py-2 md:py-3 px-3 md:px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    <span class="text-xl md:text-2xl mr-2 md:mr-3">📝</span>
+                    <span class="text-black font-medium text-sm md:text-base">Kegiatan</span>
+                </a>
+                <a href="#" onclick="showSection('daftar-sekolah')" class="flex items-center py-2 md:py-3 px-3 md:px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    <span class="text-xl md:text-2xl mr-2 md:mr-3">📋</span>
+                    <span class="text-black font-medium text-sm md:text-base">Daftar Sekolah</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-red-600">🔐 Konfirmasi Hapus Postingan</h3>
+                    <button id="closeDeleteModal" class="text-gray-500 hover:text-gray-700 text-2xl">
+                        ✕
+                    </button>
+                </div>
+                
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-red-800">
+                        <strong>⚠️ Peringatan:</strong> Masukkan kredensial admin untuk menghapus postingan ini secara permanen.
+                    </p>
+                </div>
+                
+                <form id="deleteConfirmForm" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Email Admin</label>
+                        <input type="email" id="deleteAdminEmail" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="sdnegeriduapurbasari@gmail.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="deleteAdminPassword" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Masukkan password">
+                    </div>
+                    
+                    <div id="deleteError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        <p class="text-sm">❌ Email atau password salah!</p>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button type="submit" class="flex-1 bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold">
+                            🗑️ Hapus Postingan
+                        </button>
+                        <button type="button" id="cancelDelete" class="flex-1 bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600 transition-colors font-semibold">
+                            ❌ Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Confirmation Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-blue-600">🔐 Konfirmasi Edit Postingan</h3>
+                    <button id="closeEditModal" class="text-gray-500 hover:text-gray-700 text-2xl">
+                        ✕
+                    </button>
+                </div>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-blue-800">
+                        <strong>🔒 Verifikasi Admin:</strong> Masukkan kredensial admin untuk mengedit postingan ini.
+                    </p>
+                </div>
+                
+                <form id="editConfirmForm" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Email Admin</label>
+                        <input type="email" id="editAdminEmail" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="sdnegeriduapurbasari@gmail.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="editAdminPassword" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan password">
+                    </div>
+                    
+                    <div id="editError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        <p class="text-sm">❌ Email atau password salah!</p>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                            ✏️ Lanjut Edit
+                        </button>
+                        <button type="button" id="cancelEdit" class="flex-1 bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600 transition-colors font-semibold">
+                            ❌ Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal Popup with Posting Form -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-blue-800">📝 Buat Postingan Kegiatan</h3>
+                    <button id="closeLoginModal" class="text-gray-500 hover:text-gray-700 text-2xl">
+                        ✕
+                    </button>
+                </div>
+                
+                <!-- Login Section -->
+                <div id="loginSection" class="mb-6">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                        <p class="text-sm text-blue-800">
+                            <strong>🔐 Verifikasi Admin:</strong> Masukkan kredensial admin untuk membuat postingan kegiatan
+                        </p>
+                    </div>
+                    
+                    <form id="adminLoginForm" class="space-y-4">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-medium mb-2">Email Admin</label>
+                                <input type="email" id="adminEmail" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="sdnegeriduapurbasari@gmail.com">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                                <input type="password" id="adminPassword" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan password">
+                            </div>
+                        </div>
+                        
+                        <div id="loginError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                            <p class="text-sm">❌ Email atau password salah!</p>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                                🔑 Verifikasi & Lanjutkan
+                            </button>
+                            <button type="button" id="cancelLogin" class="flex-1 bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600 transition-colors font-semibold">
+                                ❌ Batal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Posting Form Section (Hidden until login) -->
+                <div id="postingFormSection" class="hidden">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                        <p class="text-sm text-green-800">
+                            ✅ <strong>Login berhasil!</strong> Selamat datang, Admin SD Negeri 2 Purbasari. Silakan buat postingan kegiatan.
+                        </p>
+                    </div>
+                    
+                    <form id="postForm" class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Upload Media (Foto/Video)</label>
+                            <input type="file" id="mediaInput" accept="image/*,video/*" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div id="mediaPreview" class="hidden">
+                            <p class="text-sm text-gray-600 mb-2">Preview:</p>
+                            <div id="previewContainer" class="border-2 border-dashed border-gray-300 rounded-lg p-4"></div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Deskripsi Kegiatan</label>
+                            <textarea id="postDescription" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ceritakan tentang kegiatan ini..."></textarea>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                                📤 Posting Kegiatan
+                            </button>
+                            <button type="button" id="savePostBtn" class="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                                💾 Simpan Draft
+                            </button>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button type="button" id="newPostBtn" class="flex-1 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors font-semibold">
+                                ➕ Postingan Baru
+                            </button>
+                            <button type="button" id="logoutBtn" class="flex-1 bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold">
+                                🚪 Logout
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-20 md:ml-80">
+        <div class="flex items-center justify-center p-3 md:p-4">
+            <h1 class="text-xl md:text-2xl font-bold text-blue-800">SD Negeri 2 Purbasari</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="p-3 md:p-6 max-w-6xl mx-auto md:ml-80">
+        <!-- Profil Sekolah -->
+        <section id="profil-sekolah" class="content-section">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+                <!-- Background Image Header -->
+                <div class="relative h-64 bg-cover bg-center" style="background-image: url('https://i.imgur.com/lxToVay.jpg');">
+                    <div class="absolute inset-0 bg-black bg-opacity-10"></div>
+                    <div class="relative z-10 flex items-center justify-center h-full">
+                        <div class="text-center text-white">
+                            <h2 class="text-4xl font-bold mb-2">🏫 SD Negeri 2 Purbasari</h2>
+                            <p class="text-xl opacity-90">S E H A T I</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-8">
+                    <div class="grid md:grid-cols-2 gap-4 md:gap-8">
+                        <div class="bg-blue-50 bg-opacity-40 p-4 md:p-6 rounded-lg backdrop-blur-sm">
+                            <h3 class="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-800">Tentang SD Negeri 2 Purbasari</h3>
+                            <p class="text-gray-700 mb-6">Sekolah Dasar yang berkomitmen untuk memberikan pendidikan berkualitas dengan mengembangkan karakter dan prestasi siswa.</p>
+                            
+                            <div class="mb-6">
+                                <h4 class="font-semibold text-blue-700 mb-2">Visi</h4>
+                                <p class="text-gray-700 bg-white bg-opacity-50 p-4 rounded-lg italic">"Menjadi sekolah dasar unggulan yang menghasilkan generasi cerdas, berkarakter, dan berwawasan global."</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-semibold text-blue-700 mb-2">Misi</h4>
+                                <ul class="text-gray-700 space-y-2 bg-white bg-opacity-50 p-4 rounded-lg">
+                                    <li>• Menyelenggarakan pendidikan yang berkualitas</li>
+                                    <li>• Mengembangkan karakter siswa yang berakhlak mulia</li>
+                                    <li>• Memfasilitasi pengembangan bakat dan minat siswa</li>
+                                    <li>• Menciptakan lingkungan belajar yang kondusif</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-50 bg-opacity-40 p-4 md:p-6 rounded-lg backdrop-blur-sm">
+                            <h4 class="font-semibold text-green-700 mb-3 md:mb-4">Sejarah Singkat</h4>
+                            <div class="space-y-4">
+                                <div class="bg-white bg-opacity-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-gray-800 mb-2">📅 Tahun 1985</h5>
+                                    <p class="text-gray-700">SD Negeri 2 Purbasari didirikan dengan visi menjadi sekolah dasar terdepan dalam pendidikan karakter dan prestasi akademik.</p>
+                                </div>
+                                <div class="bg-white bg-opacity-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-gray-800 mb-2">🎓 35+ Tahun Pengalaman</h5>
+                                    <p class="text-gray-700">Telah menghasilkan ribuan alumni yang sukses di berbagai bidang kehidupan.</p>
+                                </div>
+                                <div class="bg-white bg-opacity-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-gray-800 mb-2">🏆 Prestasi Terkini</h5>
+                                    <p class="text-gray-700">Dengan fasilitas modern dan tenaga pengajar berkualitas, terus berkomitmen memberikan pendidikan terbaik.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profil Kepala Sekolah -->
+        <section id="profil-kepala" class="content-section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+                <h2 class="text-3xl font-bold text-blue-800 mb-6">👨‍💼 Profil Kepala Sekolah</h2>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-48 h-48 bg-blue-200 rounded-full mx-auto mb-4 overflow-hidden">
+                            <img src="https://i.imgur.com/hHCNA0K.jpg" alt="Kepala Sekolah" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800">Nunung Nur Happy, S.Pd.SD</h3>
+                        <p class="text-blue-600 font-medium">Kepala Sekolah</p>
+                        <p class="text-gray-500 text-sm mt-2">NIP: 1987604262000122003</p>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <h4 class="font-semibold text-blue-700 mb-4">Sambutan Kepala Sekolah</h4>
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <p class="text-gray-700 mb-4">"Assalamu'alaikum warahmatullahi wabarakatuh,</p>
+                            <p class="text-gray-700 mb-4">Selamat datang di website SD Negeri 2 Purbasari. Sebagai Kepala Sekolah, saya bangga dapat memimpin institusi pendidikan yang telah berdedikasi selama puluhan tahun dalam membentuk generasi penerus bangsa.</p>
+                            <p class="text-gray-700 mb-4">Kami berkomitmen untuk terus meningkatkan kualitas pendidikan dengan mengintegrasikan nilai-nilai karakter, teknologi modern, dan metode pembelajaran yang inovatif.</p>
+                            <p class="text-gray-700 mb-4">Mari bersama-sama kita wujudkan cita-cita mulia dalam mencerdaskan anak bangsa.</p>
+                            <p class="text-gray-700">Wassalamu'alaikum warahmatullahi wabarakatuh."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profil Guru & Penjaga -->
+        <section id="profil-guru" class="content-section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+                <h2 class="text-3xl font-bold text-blue-800 mb-6">👩‍🏫 Profil Guru & Penjaga</h2>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    <!-- Khusniatun Nafidzah, S.Pd.SD -->
+                    <div class="bg-gray-50 p-4 md:p-6 rounded-lg text-center">
+                        <div class="w-20 h-20 md:w-24 md:h-24 bg-pink-200 rounded-full mx-auto mb-3 md:mb-4 overflow-hidden">
+                            <img src="https://i.postimg.cc/vHM4WF7H/image.png" alt="Khusniatun Nafidzah, S.Pd.SD" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-semibold text-gray-800">Khusniatun Nafidzah, S.Pd.SD</h3>
+                        <p class="text-blue-600 text-sm mb-3">Guru Kelas 1</p>
+                        <button onclick="toggleTeacherDetail('teacher1')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                            📋 Detail
+                        </button>
+                        
+                        <!-- Detail Biodata -->
+                        <div id="teacher1" class="hidden mt-4 p-4 bg-white rounded-lg border border-gray-200 text-left">
+                            <h4 class="font-semibold text-gray-800 mb-3">📝 Biodata Lengkap</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Nama:</span>
+                                    <span class="font-medium">Khusniatun Nafidzah, S.Pd.SD</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">NIP:</span>
+                                    <span class="font-medium">198810192020122005</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Alamat:</span>
+                                    <span class="font-medium">Desa Karangjambu, Kec Karangjambu</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">No. HP:</span>
+                                    <span class="font-medium">+62 852-2633-9063</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pendidikan:</span>
+                                    <span class="font-medium">S1 PGSD</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pengalaman:</span>
+                                    <span class="font-medium">12 Tahun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Widiarti, S.Pd -->
+                    <div class="bg-gray-50 p-4 md:p-6 rounded-lg text-center">
+                        <div class="w-20 h-20 md:w-24 md:h-24 bg-green-200 rounded-full mx-auto mb-3 md:mb-4 overflow-hidden">
+                            <img src="https://i.imgur.com/YyWBbcn.jpg" alt="Widiarti, S.Pd" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-semibold text-gray-800">Widiarti, S.Pd</h3>
+                        <p class="text-blue-600 text-sm mb-3">Guru Kelas 2</p>
+                        <button onclick="toggleTeacherDetail('teacher2')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                            📋 Detail
+                        </button>
+                        
+                        <!-- Detail Biodata -->
+                        <div id="teacher2" class="hidden mt-4 p-4 bg-white rounded-lg border border-gray-200 text-left">
+                            <h4 class="font-semibold text-gray-800 mb-3">📝 Biodata Lengkap</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Nama:</span>
+                                    <span class="font-medium">Widiarti, S.Pd</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">NIP:</span>
+                                    <span class="font-medium">198112132008012004</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Alamat:</span>
+                                    <span class="font-medium">Jl. Desa Karangjambu Kec Karangjambu</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">No. HP:</span>
+                                    <span class="font-medium">+62 852-9283-1708</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pendidikan:</span>
+                                    <span class="font-medium">S1 PGSD</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pengalaman:</span>
+                                    <span class="font-medium">18 Tahun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Shofa Ul Lubbi, S.Pd -->
+                    <div class="bg-gray-50 p-4 md:p-6 rounded-lg text-center">
+                        <div class="w-20 h-20 md:w-24 md:h-24 bg-yellow-200 rounded-full mx-auto mb-3 md:mb-4 overflow-hidden">
+                            <img src="https://i.ibb.co.com/bgfVghvk/n6wFeui.png" alt="Shofa Ul Lubbi, S.Pd<" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-semibold text-gray-800">Shofa Ul Lubbi, S.Pd</h3>
+                        <p class="text-blue-600 text-sm mb-3">Guru Kelas 3</p>
+                        <button onclick="toggleTeacherDetail('teacher3')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                            📋 Detail
+                        </button>
+                        
+                        <!-- Detail Biodata -->
+                        <div id="teacher3" class="hidden mt-4 p-4 bg-white rounded-lg border border-gray-200 text-left">
+                            <h4 class="font-semibold text-gray-800 mb-3">📝 Biodata Lengkap</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Nama:</span>
+                                    <span class="font-medium">Shofa Ul Lubbi, S.Pd</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">NIP:</span>
+                                    <span class="font-medium">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Alamat:</span>
+                                    <span class="font-medium">Jl. Desa Purbasari, Kecamatan Karangjambu</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">No. HP:</span>
+                                    <span class="font-medium">+62 878-2591-4595</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pendidikan:</span>
+                                    <span class="font-medium">S1 PGSD</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pengalaman:</span>
+                                    <span class="font-medium">10 Tahun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mokhamad Akhirudin, S.Pd -->
+                    <div class="bg-gray-50 p-4 md:p-6 rounded-lg text-center">
+                        <div class="w-20 h-20 md:w-24 md:h-24 bg-purple-200 rounded-full mx-auto mb-3 md:mb-4 overflow-hidden">
+                            <img src="https://i.ibb.co.com/YBLvts1k/image.png" alt="Mokhamad Akhirudin, S.Pd" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-semibold text-gray-800">Mokhamad Akhirudin, S.Pd</h3>
+                        <p class="text-blue-600 text-sm mb-3">Guru Kelas 4</p>
+                        <button onclick="toggleTeacherDetail('teacher4')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                            📋 Detail
+                        </button>
+                        
+                        <!-- Detail Biodata -->
+                        <div id="teacher4" class="hidden mt-4 p-4 bg-white rounded-lg border border-gray-200 text-left">
+                            <h4 class="font-semibold text-gray-800 mb-3">📝 Biodata Lengkap</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Nama:</span>
+                                    <span class="font-medium">Mokhamad Akhirudin, S.Pd</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">NIP:</span>
+                                    <span class="font-medium">198401202010011008</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Alamat:</span>
+                                    <span class="font-medium">Jl. Desa Karangreja Kec Karangreja</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">No. HP:</span>
+                                    <span class="font-medium">085743601217</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pendidikan:</span>
+                                    <span class="font-medium">S1 Penjaskes</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pengalaman:</span>
+                                    <span class="font-medium">17 Tahun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Septi Anisa Tamami, S.Pd -->
+                    <div class="bg-gray-50 p-4 md:p-6 rounded-lg text-center">
+                        <div class="w-20 h-20 md:w-24 md:h-24 bg-red-200 rounded-full mx-auto mb-3 md:mb-4 overflow-hidden">
+                            <img src="https://i.ibb.co.com/nNVS0Cn0/image.png" alt="Septi Anisa Tamami, S.Pd" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-semibold text-gray-800">Septi Anisa Tamami, S.Pd</h3>
+                        <p class="text-blue-600 text-sm mb-3">Guru Kelas 5</p>
+                        <button onclick="toggleTeacherDetail('teacher5')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                            📋 Detail
+                        </button>
+                        
+                        <!-- Detail Biodata -->
+                        <div id="teacher5" class="hidden mt-4 p-4 bg-white rounded-lg border border-gray-200 text-left">
+                            <h4 class="font-semibold text-gray-800 mb-3">📝 Biodata Lengkap</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Nama:</span>
+                                    <span class="font-medium">Septi Anisa Tamami, S.Pd</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">NIP:</span>
+                                    <span class="font-medium">199509202022212015</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Alamat:</span>
+                                    <span class="font-medium">Jl. Desa Purbasari Kec. Karangjambu</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">No. HP:</span>
+                                    <span class="font-medium">0816-7890-1234</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pendidikan:</span>
+                                    <span class="font-medium">S1 PGSD</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pengalaman:</span>
+                                    <span class="font-medium">8 Tahun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                     <!-- Iis Susmiati, S.Pd -->
+                    <div class="bg-gray-50 p-4 md:p-6 rounded-lg text-center">
+                        <div class="w-20 h-20 md:w-24 md:h-24 bg-red-200 rounded-full mx-auto mb-3 md:mb-4 overflow-hidden">
+                            <img src="https://i.ibb.co.com/4ggJFfV9/image.png" alt="Iis Susmiati, S.Pd" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-semibold text-gray-800">Iis Susmiati, S.Pd</h3>
+                        <p class="text-blue-600 text-sm mb-3">Guru Kelas 6</p>
+                        <button onclick="toggleTeacherDetail('teacher6')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                            📋 Detail
+                        </button>
+                        
+                        <!-- Detail Biodata -->
+                        <div id="teacher6" class="hidden mt-4 p-4 bg-white rounded-lg border border-gray-200 text-left">
+                            <h4 class="font-semibold text-gray-800 mb-3">📝 Biodata Lengkap</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Nama:</span>
+                                    <span class="font-medium">Iis Susmiati, S.Pd</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">NIP:</span>
+                                    <span class="font-medium">199103232022212014</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Alamat:</span>
+                                    <span class="font-medium">Jl. Desa Jingkang, Kec Karangjambu</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">No. HP:</span>
+                                    <span class="font-medium">+62 852-9199-2295</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pendidikan:</span>
+                                    <span class="font-medium">S1 PGSD</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pengalaman:</span>
+                                    <span class="font-medium">8 Tahun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pak Toha -->
+                    <div class="bg-gray-50 p-4 md:p-6 rounded-lg text-center">
+                        <div class="w-20 h-20 md:w-24 md:h-24 bg-gray-300 rounded-full mx-auto mb-3 md:mb-4 overflow-hidden">
+                            <img src="https://i.ibb.co.com/RpF78B3v/image.png" alt="Pak Toha" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-semibold text-gray-800">Pak Toha</h3>
+                        <p class="text-blue-600 text-sm mb-3">Penjaga Sekolah</p>
+                        <button onclick="toggleTeacherDetail('Penjaga Sekolah')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                            📋 Detail
+                        </button>
+                        
+                        <!-- Detail Biodata -->
+                        <div id="Penjaga Sekolah" class="hidden mt-4 p-4 bg-white rounded-lg border border-gray-200 text-left">
+                            <h4 class="font-semibold text-gray-800 mb-3">📝 Biodata Lengkap</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Nama:</span>
+                                    <span class="font-medium">Toha</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">NIK:</span>
+                                    <span class="font-medium">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Alamat:</span>
+                                    <span class="font-medium">Jl. Desa Purbasari, Kec Karangjambu</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">No. HP:</span>
+                                    <span class="font-medium">+62 878-3416-8112</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pendidikan:</span>
+                                    <span class="font-medium">SMA</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Pengalaman:</span>
+                                    <span class="font-medium">20 Tahun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sarana & Prasarana -->
+        <section id="sarana-prasarana" class="content-section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+                <h2 class="text-3xl font-bold text-blue-800 mb-6">🏢 Sarana & Prasarana</h2>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 rounded-lg overflow-hidden">
+                        <div class="h-48 bg-blue-200 flex items-center justify-center">
+                            <span class="text-6xl">🏫</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Ruang Kelas</h3>
+                            <p class="text-gray-600 text-sm">6 ruang kelas yang nyaman dengan fasilitas AC dan proyektor</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg overflow-hidden">
+                        <div class="h-48 bg-green-200 flex items-center justify-center">
+                            <span class="text-6xl">📚</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Perpustakaan</h3>
+                            <p class="text-gray-600 text-sm">Koleksi buku lengkap dengan area baca yang nyaman</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg overflow-hidden">
+                        <div class="h-48 bg-red-200 flex items-center justify-center">
+                            <span class="text-6xl">🏥</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">GAZEBO</h3>
+                            <p class="text-gray-600 text-sm">Tempat Membaca dan Bercengkrama yang nyaman</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg overflow-hidden">
+                        <div class="h-48 bg-yellow-200 flex items-center justify-center">
+                            <span class="text-6xl">⚽</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Lapangan Olahraga</h3>
+                            <p class="text-gray-600 text-sm">Lapangan serbaguna untuk berbagai aktivitas olahraga</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg overflow-hidden">
+                        <div class="h-48 bg-purple-200 flex items-center justify-center">
+                            <span class="text-6xl">💻</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Ruang Komputer Kantor</h3>
+                            <p class="text-gray-600 text-sm">Komputer Untuk bekerja </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg overflow-hidden">
+                        <div class="h-48 bg-pink-200 flex items-center justify-center">
+                            <span class="text-6xl">🍽️</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Kantin</h3>
+                            <p class="text-gray-600 text-sm">Kantin sehat dengan menu bergizi untuk siswa</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Postingan Kegiatan -->
+        <section id="kegiatan" class="content-section hidden">
+            <div class="space-y-6">
+                <!-- Header dengan tombol posting -->
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-3xl font-bold text-blue-800">📝 Kegiatan Sekolah</h2>
+                        <button id="createPostBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                            ➕ Posting Kegiatan
+                        </button>
+                    </div>
+                    <p class="text-gray-600">Berbagi kegiatan dan momen berharga di SD Negeri 2 Purbasari</p>
+                </div>
+                
+
+                
+                <!-- Timeline Postingan -->
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-3xl font-bold text-blue-800">📰 Timeline Kegiatan</h2>
+                        <div class="text-sm text-gray-500">
+                            <span id="postCount">0</span> postingan
+                        </div>
+                    </div>
+                    
+                    <div id="postsContainer" class="space-y-6 max-h-screen overflow-y-auto">
+                        <!-- Postingan akan ditampilkan di sini -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Daftar Sekolah -->
+        <section id="daftar-sekolah" class="content-section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+                <h2 class="text-3xl font-bold text-blue-800 mb-6">📋 Formulir Pendaftaran Siswa Baru</h2>
+                
+                <form id="registrationForm" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Nama Lengkap Siswa *</label>
+                            <input type="text" id="studentName" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan nama lengkap">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Umur *</label>
+                            <input type="number" id="studentAge" required min="5" max="12" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Umur siswa">
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Nama Ayah *</label>
+                            <input type="text" id="fatherName" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Nama ayah">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Nama Ibu *</label>
+                            <input type="text" id="motherName" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Nama ibu">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Alamat Lengkap *</label>
+                        <textarea id="address" required rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Alamat lengkap siswa"></textarea>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Pilihan Kelas *</label>
+                            <select id="classChoice" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">Pilih Kelas</option>
+                                <option value="Kelas 1A">Kelas 1A</option>
+                                <option value="Kelas 1B">Kelas 1B</option>
+                                <option value="Kelas 2A">Kelas 2A</option>
+                                <option value="Kelas 2B">Kelas 2B</option>
+                                <option value="Kelas 3A">Kelas 3A</option>
+                                <option value="Kelas 3B">Kelas 3B</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Nomor WhatsApp Orang Tua *</label>
+                            <input type="tel" id="whatsappNumber" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="08xxxxxxxxxx">
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-700">
+                            <strong>Catatan:</strong> Setelah mengklik tombol "Kirim via WhatsApp", Anda akan diarahkan ke WhatsApp untuk mengirim data pendaftaran ke admin sekolah.
+                        </p>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-green-600 text-white py-4 rounded-lg hover:bg-green-700 transition-colors font-semibold text-lg">
+                        📱 Kirim Pendaftaran via WhatsApp
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Navigation system
+        const sections = [
+            { id: 'profil-sekolah', name: 'Profil Sekolah' },
+            { id: 'profil-kepala', name: 'Kepala Sekolah' },
+            { id: 'profil-guru', name: 'Guru & Penjaga' },
+            { id: 'sarana-prasarana', name: 'Sarana Prasarana' },
+            { id: 'kegiatan', name: 'Kegiatan' },
+            { id: 'daftar-sekolah', name: 'Daftar Sekolah' }
+        ];
+        let currentSectionIndex = 0;
+        let autoNextInterval = null;
+
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const menuIcon = document.getElementById('menuIcon');
+        let isMenuOpen = false;
+
+        function toggleMobileMenu() {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                menuIcon.textContent = '✕';
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                menuIcon.textContent = '☰';
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        overlay.addEventListener('click', toggleMobileMenu);
+
+        // Navigation preferences functionality
+        const navPrefBtn = document.getElementById('navPrefBtn');
+        const navPrefPanel = document.getElementById('navPrefPanel');
+        const navToolbar = document.getElementById('navToolbar');
+        const showToolbarCheckbox = document.getElementById('showToolbar');
+        const autoNextCheckbox = document.getElementById('autoNext');
+        const smoothScrollCheckbox = document.getElementById('smoothScroll');
+        const resetPrefsBtn = document.getElementById('resetPrefs');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const homeBtn = document.getElementById('homeBtn');
+        const currentSectionSpan = document.getElementById('currentSection');
+        const sectionNumberSpan = document.getElementById('sectionNumber');
+
+        let isPrefPanelOpen = false;
+
+        // Toggle preferences panel
+        navPrefBtn.addEventListener('click', function() {
+            isPrefPanelOpen = !isPrefPanelOpen;
+            if (isPrefPanelOpen) {
+                navPrefPanel.classList.remove('hidden');
+            } else {
+                navPrefPanel.classList.add('hidden');
+            }
+        });
+
+        // Close preferences panel when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!navPrefBtn.contains(e.target) && !navPrefPanel.contains(e.target)) {
+                navPrefPanel.classList.add('hidden');
+                isPrefPanelOpen = false;
+            }
+        });
+
+        // Toolbar visibility toggle
+        showToolbarCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                navToolbar.classList.remove('hidden');
+            } else {
+                navToolbar.classList.add('hidden');
+            }
+        });
+
+        // Auto next functionality
+        autoNextCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                startAutoNext();
+            } else {
+                stopAutoNext();
+            }
+        });
+
+        function startAutoNext() {
+            stopAutoNext(); // Clear any existing interval
+            autoNextInterval = setInterval(function() {
+                if (currentSectionIndex < sections.length - 1) {
+                    navigateToSection(currentSectionIndex + 1);
+                } else {
+                    navigateToSection(0); // Loop back to first section
+                }
+            }, 5000);
+        }
+
+        function stopAutoNext() {
+            if (autoNextInterval) {
+                clearInterval(autoNextInterval);
+                autoNextInterval = null;
+            }
+        }
+
+        // Reset preferences
+        resetPrefsBtn.addEventListener('click', function() {
+            showToolbarCheckbox.checked = true;
+            autoNextCheckbox.checked = false;
+            smoothScrollCheckbox.checked = true;
+            
+            navToolbar.classList.remove('hidden');
+            stopAutoNext();
+        });
+
+        // Navigation functions
+        function updateNavigationState() {
+            currentSectionSpan.textContent = sections[currentSectionIndex].name;
+            sectionNumberSpan.textContent = currentSectionIndex + 1;
+            
+            // Update button states
+            prevBtn.disabled = currentSectionIndex === 0;
+            nextBtn.disabled = currentSectionIndex === sections.length - 1;
+        }
+
+        function navigateToSection(index) {
+            if (index >= 0 && index < sections.length) {
+                currentSectionIndex = index;
+                showSection(sections[index].id);
+                updateNavigationState();
+            }
+        }
+
+        // Navigation button events
+        prevBtn.addEventListener('click', function() {
+            if (currentSectionIndex > 0) {
+                navigateToSection(currentSectionIndex - 1);
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (currentSectionIndex < sections.length - 1) {
+                navigateToSection(currentSectionIndex + 1);
+            }
+        });
+
+        homeBtn.addEventListener('click', function() {
+            navigateToSection(0);
+        });
+
+        // Section navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            const sectionElements = document.querySelectorAll('.content-section');
+            sectionElements.forEach(section => section.classList.add('hidden'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update current section index
+            const sectionIndex = sections.findIndex(section => section.id === sectionId);
+            if (sectionIndex !== -1) {
+                currentSectionIndex = sectionIndex;
+                updateNavigationState();
+            }
+            
+            // Smooth scroll to top if enabled
+            if (smoothScrollCheckbox.checked) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            // Close mobile menu after selection
+            if (window.innerWidth < 768 && isMenuOpen) {
+                toggleMobileMenu();
+            }
+        }
+
+        // Media preview functionality
+        const mediaInput = document.getElementById('mediaInput');
+        const mediaPreview = document.getElementById('mediaPreview');
+        const previewContainer = document.getElementById('previewContainer');
+
+        mediaInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileType = file.type;
+                    let previewElement;
+                    
+                    if (fileType.startsWith('image/')) {
+                        previewElement = `<img src="${e.target.result}" class="media-preview rounded-lg" alt="Preview">`;
+                    } else if (fileType.startsWith('video/')) {
+                        previewElement = `<video src="${e.target.result}" class="media-preview rounded-lg" controls></video>`;
+                    }
+                    
+                    previewContainer.innerHTML = previewElement;
+                    mediaPreview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                mediaPreview.classList.add('hidden');
+            }
+        });
+
+        // Admin credentials
+        const ADMIN_CREDENTIALS = {
+            email: 'sdnegeriduapurbasari@gmail.com',
+            password: 'sekolahpurbasari'
+        };
+
+        // Login state
+        let isAdminLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+
+        // Posts functionality
+        let posts = JSON.parse(localStorage.getItem('schoolPosts')) || [];
+        let drafts = JSON.parse(localStorage.getItem('schoolDrafts')) || [];
+        
+        // Initialize posts with like and comment data if not exists
+        posts = posts.map(post => ({
+            ...post,
+            likes: post.likes || 0,
+            likedBy: post.likedBy || [],
+            comments: post.comments || []
+        }));
+
+        function updatePostCount() {
+            document.getElementById('postCount').textContent = posts.length;
+        }
+
+        function displayPosts() {
+            const postsContainer = document.getElementById('postsContainer');
+            
+            if (posts.length === 0) {
+                postsContainer.innerHTML = '<div class="text-center py-12"><p class="text-gray-500 text-lg">Belum ada postingan kegiatan.</p><p class="text-gray-400 text-sm mt-2">Buat postingan pertama Anda!</p></div>';
+                updatePostCount();
+                return;
+            }
+            
+            postsContainer.innerHTML = posts.map((post, index) => `
+                <div class="post-card bg-gradient-to-r from-blue-50 to-white rounded-lg p-6 border border-blue-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                SD
+                            </div>
+                            <div class="ml-3">
+                                <h4 class="font-semibold text-gray-800">SD Negeri 2 Purbasari</h4>
+                                <p class="text-sm text-gray-500">${post.date}</p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                            #${posts.length - index}
+                        </div>
+                    </div>
+                    
+                    ${post.media ? `
+                        <div class="mb-4">
+                            ${post.mediaType.startsWith('image/') ? 
+                                `<img src="${post.media}" class="w-full rounded-lg max-h-96 object-cover border border-gray-200" alt="Kegiatan">` :
+                                `<video src="${post.media}" class="w-full rounded-lg max-h-96 border border-gray-200" controls></video>`
+                            }
+                        </div>
+                    ` : ''}
+                    
+                    <p class="text-gray-700 leading-relaxed mb-4">${post.description}</p>
+                    
+                    <div class="pt-4 border-t border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-6">
+                                <button onclick="toggleLike(${post.id})" class="flex items-center text-blue-600 hover:text-blue-700 transition-colors group">
+                                    <span class="mr-2 group-hover:scale-110 transition-transform">👍</span> 
+                                    <span class="font-medium">${post.likes} Suka</span>
+                                </button>
+                                <button onclick="toggleComments(${post.id})" class="flex items-center text-gray-600 hover:text-gray-700 transition-colors group">
+                                    <span class="mr-2 group-hover:scale-110 transition-transform">💬</span> 
+                                    <span class="font-medium">${post.comments.length} Komentar</span>
+                                </button>
+                                <button onclick="addComment(${post.id})" class="flex items-center text-green-600 hover:text-green-700 transition-colors group">
+                                    <span class="mr-2 group-hover:scale-110 transition-transform">✍️</span> 
+                                    <span class="font-medium">Tulis Komentar</span>
+                                </button>
+                            </div>
+                            ${isAdminLoggedIn ? `
+                                <div class="flex items-center space-x-3">
+                                    <button onclick="editPost(${post.id})" class="text-blue-500 hover:text-blue-700 text-sm transition-colors">
+                                        ✏️ Edit
+                                    </button>
+                                    <button onclick="deletePost(${post.id})" class="text-red-500 hover:text-red-700 text-sm transition-colors">
+                                        🗑️ Hapus
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <!-- Comments Section -->
+                        <div id="comments-${post.id}" class="hidden mt-4 bg-gray-50 rounded-lg p-4">
+                            <h5 class="font-semibold text-gray-800 mb-3">💬 Komentar (${post.comments.length})</h5>
+                            
+                            ${post.comments.length === 0 ? 
+                                '<p class="text-gray-500 text-sm italic">Belum ada komentar. Jadilah yang pertama berkomentar!</p>' :
+                                post.comments.map(comment => `
+                                    <div class="bg-white rounded-lg p-3 mb-3 border border-gray-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center">
+                                                <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm">
+                                                    👤
+                                                </div>
+                                                <div class="ml-2">
+                                                    <p class="font-medium text-gray-800 text-sm">${comment.author}</p>
+                                                    <p class="text-xs text-gray-500">${comment.date}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-700 text-sm">${comment.text}</p>
+                                    </div>
+                                `).join('')
+                            }
+                            
+                            <div class="mt-4 pt-3 border-t border-gray-200">
+                                <button onclick="addComment(${post.id})" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                                    ✍️ Tambah Komentar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            updatePostCount();
+        }
+
+        // Delete post functionality with admin verification
+        let postToDelete = null;
+
+        function deletePost(postId) {
+            postToDelete = postId;
+            openDeleteModal();
+        }
+
+        function openDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            
+            // Clear form
+            document.getElementById('deleteAdminEmail').value = '';
+            document.getElementById('deleteAdminPassword').value = '';
+            document.getElementById('deleteError').classList.add('hidden');
+            postToDelete = null;
+        }
+
+        function showDeleteError() {
+            const deleteError = document.getElementById('deleteError');
+            deleteError.classList.remove('hidden');
+            setTimeout(() => {
+                deleteError.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Edit post functionality with admin verification
+        let editingPostId = null;
+        let postToEdit = null;
+
+        function editPost(postId) {
+            postToEdit = postId;
+            openEditModal();
+        }
+
+        function openEditModal() {
+            document.getElementById('editModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            
+            // Clear form
+            document.getElementById('editAdminEmail').value = '';
+            document.getElementById('editAdminPassword').value = '';
+            document.getElementById('editError').classList.add('hidden');
+            postToEdit = null;
+        }
+
+        function showEditError() {
+            const editError = document.getElementById('editError');
+            editError.classList.remove('hidden');
+            setTimeout(() => {
+                editError.classList.add('hidden');
+            }, 3000);
+        }
+
+        function proceedWithEdit(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+            
+            editingPostId = postId;
+            
+            // Fill form with existing data
+            document.getElementById('postDescription').value = post.description;
+            
+            // Show media preview if exists
+            if (post.media) {
+                const previewElement = post.mediaType.startsWith('image/') ? 
+                    `<img src="${post.media}" class="media-preview rounded-lg" alt="Preview">` :
+                    `<video src="${post.media}" class="media-preview rounded-lg" controls></video>`;
+                
+                previewContainer.innerHTML = previewElement;
+                mediaPreview.classList.remove('hidden');
+            }
+            
+            // Update modal title and button text
+            document.querySelector('#loginModal h3').textContent = '✏️ Edit Postingan Kegiatan';
+            document.querySelector('#postForm button[type="submit"]').innerHTML = '💾 Update Postingan';
+            
+            // Open main modal directly to posting form
+            openLoginModal();
+            loginSection.classList.add('hidden');
+            postingFormSection.classList.remove('hidden');
+        }
+
+        // Like functionality
+        function toggleLike(postId) {
+            const userId = 'user_' + Date.now(); // Simple user ID simulation
+            const post = posts.find(p => p.id === postId);
+            
+            if (!post) return;
+            
+            const userLikedIndex = post.likedBy.indexOf(userId);
+            
+            if (userLikedIndex === -1) {
+                // User hasn't liked, add like
+                post.likes += 1;
+                post.likedBy.push(userId);
+            } else {
+                // User already liked, remove like
+                post.likes -= 1;
+                post.likedBy.splice(userLikedIndex, 1);
+            }
+            
+            localStorage.setItem('schoolPosts', JSON.stringify(posts));
+            displayPosts();
+        }
+
+        // Comment functionality
+        function addComment(postId) {
+            const commentText = prompt('Tulis komentar Anda:');
+            
+            if (!commentText || commentText.trim() === '') {
+                return;
+            }
+            
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+            
+            const comment = {
+                id: Date.now(),
+                text: commentText.trim(),
+                author: 'Pengunjung',
+                date: new Date().toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+            
+            post.comments.push(comment);
+            localStorage.setItem('schoolPosts', JSON.stringify(posts));
+            displayPosts();
+        }
+
+        // Toggle comments visibility
+        function toggleComments(postId) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            if (commentsSection.classList.contains('hidden')) {
+                commentsSection.classList.remove('hidden');
+            } else {
+                commentsSection.classList.add('hidden');
+            }
+        }
+
+        // Form functions
+        function resetForm() {
+            document.getElementById('postForm').reset();
+            mediaPreview.classList.add('hidden');
+            previewContainer.innerHTML = '';
+        }
+
+        function resetEditMode() {
+            editingPostId = null;
+            resetForm();
+            
+            // Reset modal title and button text
+            document.querySelector('#loginModal h3').textContent = '📝 Buat Postingan Kegiatan';
+            document.querySelector('#postForm button[type="submit"]').innerHTML = '📤 Posting Kegiatan';
+        }
+
+        function saveAsDraft() {
+            const description = document.getElementById('postDescription').value.trim();
+            const mediaFile = mediaInput.files[0];
+            
+            if (!description && !mediaFile) {
+                alert('Tidak ada konten untuk disimpan sebagai draft!');
+                return;
+            }
+            
+            const draft = {
+                id: Date.now(),
+                description: description,
+                date: new Date().toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
+                media: null,
+                mediaType: null
+            };
+            
+            if (mediaFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    draft.media = e.target.result;
+                    draft.mediaType = mediaFile.type;
+                    
+                    drafts.unshift(draft);
+                    localStorage.setItem('schoolDrafts', JSON.stringify(drafts));
+                    alert('Draft berhasil disimpan!');
+                };
+                reader.readAsDataURL(mediaFile);
+            } else {
+                drafts.unshift(draft);
+                localStorage.setItem('schoolDrafts', JSON.stringify(drafts));
+                alert('Draft berhasil disimpan!');
+            }
+        }
+
+        // Post form submission
+        document.getElementById('postForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const description = document.getElementById('postDescription').value.trim();
+            const mediaFile = mediaInput.files[0];
+            
+            if (!description) {
+                alert('Mohon isi deskripsi kegiatan!');
+                return;
+            }
+            
+            if (editingPostId) {
+                // Edit mode - update existing post
+                const postIndex = posts.findIndex(p => p.id === editingPostId);
+                if (postIndex !== -1) {
+                    const existingPost = posts[postIndex];
+                    
+                    // Update description
+                    existingPost.description = description;
+                    existingPost.date = new Date().toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) + ' (diedit)';
+                    
+                    if (mediaFile) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            existingPost.media = e.target.result;
+                            existingPost.mediaType = mediaFile.type;
+                            
+                            localStorage.setItem('schoolPosts', JSON.stringify(posts));
+                            displayPosts();
+                            
+                            // Reset and close
+                            resetEditMode();
+                            closeModal();
+                            
+                            alert('Postingan berhasil diperbarui!');
+                        };
+                        reader.readAsDataURL(mediaFile);
+                    } else {
+                        // Keep existing media if no new file uploaded
+                        localStorage.setItem('schoolPosts', JSON.stringify(posts));
+                        displayPosts();
+                        
+                        // Reset and close
+                        resetEditMode();
+                        closeModal();
+                        
+                        alert('Postingan berhasil diperbarui!');
+                    }
+                }
+            } else {
+                // Create mode - new post
+                const post = {
+                    id: Date.now(),
+                    description: description,
+                    date: new Date().toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }),
+                    media: null,
+                    mediaType: null,
+                    likes: 0,
+                    likedBy: [],
+                    comments: []
+                };
+                
+                if (mediaFile) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        post.media = e.target.result;
+                        post.mediaType = mediaFile.type;
+                        
+                        posts.unshift(post);
+                        localStorage.setItem('schoolPosts', JSON.stringify(posts));
+                        displayPosts();
+                        
+                        // Reset form and close modal
+                        resetForm();
+                        closeModal();
+                        
+                        alert('Postingan berhasil dipublikasikan!');
+                    };
+                    reader.readAsDataURL(mediaFile);
+                } else {
+                    posts.unshift(post);
+                    localStorage.setItem('schoolPosts', JSON.stringify(posts));
+                    displayPosts();
+                    
+                    // Reset form and close modal
+                    resetForm();
+                    closeModal();
+                    
+                    alert('Postingan berhasil dipublikasikan!');
+                }
+            }
+        });
+
+        // Button event listeners
+        document.getElementById('savePostBtn').addEventListener('click', saveAsDraft);
+        document.getElementById('newPostBtn').addEventListener('click', function() {
+            if (confirm('Yakin ingin membuat postingan baru? Data yang belum disimpan akan hilang.')) {
+                resetEditMode();
+            }
+        });
+
+        // Registration form submission
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                studentName: document.getElementById('studentName').value,
+                studentAge: document.getElementById('studentAge').value,
+                fatherName: document.getElementById('fatherName').value,
+                motherName: document.getElementById('motherName').value,
+                address: document.getElementById('address').value,
+                classChoice: document.getElementById('classChoice').value,
+                whatsappNumber: document.getElementById('whatsappNumber').value
+            };
+            
+            // Format WhatsApp message
+            const message = `*PENDAFTARAN SISWA BARU SD Negeri 2 Purbasari*
+
+📝 *Data Siswa:*
+Nama: ${formData.studentName}
+Umur: ${formData.studentAge} tahun
+Kelas yang dipilih: ${formData.classChoice}
+
+👨‍👩‍👧‍👦 *Data Orang Tua:*
+Nama Ayah: ${formData.fatherName}
+Nama Ibu: ${formData.motherName}
+
+🏠 *Alamat:*
+${formData.address}
+
+📱 *Kontak:*
+WhatsApp: ${formData.whatsappNumber}
+
+Mohon konfirmasi untuk proses pendaftaran selanjutnya. Terima kasih!`;
+
+            // WhatsApp CS number (ganti dengan nomor sebenarnya)
+            const csNumber = '6281234567890';
+            const whatsappUrl = `https://wa.me/${csNumber}?text=${encodeURIComponent(message)}`;
+            
+            // Open WhatsApp
+            window.open(whatsappUrl, '_blank');
+        });
+
+        // Teacher detail toggle function
+        function toggleTeacherDetail(teacherId) {
+            const detailElement = document.getElementById(teacherId);
+            if (detailElement.classList.contains('hidden')) {
+                detailElement.classList.remove('hidden');
+            } else {
+                detailElement.classList.add('hidden');
+            }
+        }
+
+        // Modal functionality
+        const loginModal = document.getElementById('loginModal');
+        const createPostBtn = document.getElementById('createPostBtn');
+        const closeLoginModal = document.getElementById('closeLoginModal');
+        const cancelLogin = document.getElementById('cancelLogin');
+        const loginSection = document.getElementById('loginSection');
+        const postingFormSection = document.getElementById('postingFormSection');
+
+        function openLoginModal() {
+            loginModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            
+            // Reset modal state
+            if (isAdminLoggedIn) {
+                // If already logged in, show posting form directly
+                loginSection.classList.add('hidden');
+                postingFormSection.classList.remove('hidden');
+            } else {
+                // Show login section first
+                loginSection.classList.remove('hidden');
+                postingFormSection.classList.add('hidden');
+            }
+        }
+
+        function closeModal() {
+            loginModal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Restore scrolling
+            
+            // Clear forms and reset state
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').classList.add('hidden');
+            resetEditMode(); // This will also reset the form
+            
+            // Reset modal sections
+            loginSection.classList.remove('hidden');
+            postingFormSection.classList.add('hidden');
+        }
+
+        // Event listeners for modal
+        createPostBtn.addEventListener('click', openLoginModal);
+        closeLoginModal.addEventListener('click', closeModal);
+        cancelLogin.addEventListener('click', closeModal);
+
+        // Close modal when clicking outside
+        loginModal.addEventListener('click', function(e) {
+            if (e.target === loginModal) {
+                closeModal();
+            }
+        });
+
+        // Login functionality
+        function showLoginError() {
+            const loginError = document.getElementById('loginError');
+            loginError.classList.remove('hidden');
+            setTimeout(() => {
+                loginError.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Admin login form
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            
+            if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+                isAdminLoggedIn = true;
+                localStorage.setItem('adminLoggedIn', 'true');
+                
+                // Hide login section and show posting form in modal
+                loginSection.classList.add('hidden');
+                postingFormSection.classList.remove('hidden');
+                
+            } else {
+                showLoginError();
+                // Clear password field
+                document.getElementById('adminPassword').value = '';
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            if (confirm('Yakin ingin logout?')) {
+                isAdminLoggedIn = false;
+                localStorage.removeItem('adminLoggedIn');
+                
+                // Close modal
+                closeModal();
+            }
+        });
+
+        // Delete modal event listeners
+        document.getElementById('closeDeleteModal').addEventListener('click', closeDeleteModal);
+        document.getElementById('cancelDelete').addEventListener('click', closeDeleteModal);
+
+        // Delete confirmation form
+        document.getElementById('deleteConfirmForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('deleteAdminEmail').value.trim();
+            const password = document.getElementById('deleteAdminPassword').value;
+            
+            if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+                // Admin verified, proceed with deletion
+                if (postToDelete && confirm('Postingan akan dihapus secara permanen. Lanjutkan?')) {
+                    posts = posts.filter(post => post.id !== postToDelete);
+                    localStorage.setItem('schoolPosts', JSON.stringify(posts));
+                    displayPosts();
+                    closeDeleteModal();
+                    alert('Postingan berhasil dihapus!');
+                }
+            } else {
+                showDeleteError();
+                // Clear password field
+                document.getElementById('deleteAdminPassword').value = '';
+            }
+        });
+
+        // Close delete modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === document.getElementById('deleteModal')) {
+                closeDeleteModal();
+            }
+        });
+
+        // Edit modal event listeners
+        document.getElementById('closeEditModal').addEventListener('click', closeEditModal);
+        document.getElementById('cancelEdit').addEventListener('click', closeEditModal);
+
+        // Edit confirmation form
+        document.getElementById('editConfirmForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('editAdminEmail').value.trim();
+            const password = document.getElementById('editAdminPassword').value;
+            
+            if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+                // Admin verified, proceed with edit
+                closeEditModal();
+                proceedWithEdit(postToEdit);
+            } else {
+                showEditError();
+                // Clear password field
+                document.getElementById('editAdminPassword').value = '';
+            }
+        });
+
+        // Close edit modal when clicking outside
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === document.getElementById('editModal')) {
+                closeEditModal();
+            }
+        });
+
+        // Initialize
+        displayPosts();
+        updateNavigationState();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96b36f47f06f4ab5',t:'MTc1NDUzNDY5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
